@@ -3,92 +3,59 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>STAR STORE | المتجر الرسمي</title>
+<title>STAR STORE</title>
 
 <style>
-* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
-body { background-color: #fcfcfc; color: #333; overflow-x: hidden; }
-header { background: white; padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; position: sticky; top: 0; z-index: 100; }
-.logo { font-size: 26px; font-weight: 800; letter-spacing: 3px; color: #000; text-decoration: none; }
-.cart-icon { position: relative; cursor: pointer; font-size: 16px; font-weight: 600; background: #000; color: #fff; padding: 8px 18px; border-radius: 25px; }
-.cart-count { position: absolute; top: -5px; right: -5px; background: #e74c3c; color: white; border-radius: 50%; padding: 2px 6px; font-size: 10px; }
+*{margin:0;padding:0;box-sizing:border-box;font-family:Cairo}
+body{background:#fcfcfc}
+header{display:flex;justify-content:space-between;padding:15px;background:#fff;border-bottom:1px solid #eee}
+.cart{background:#000;color:#fff;padding:8px 15px;border-radius:20px;cursor:pointer}
 
-.main-wrapper { display: flex; padding: 30px 5%; max-width: 1400px; margin: 0 auto; gap: 30px; }
-aside { width: 220px; }
-.filter-section h4 { margin-bottom: 15px; border-bottom: 2px solid #000; display: inline-block; }
-.filter-section ul { list-style: none; }
-.filter-section ul li { margin-bottom: 10px; cursor: pointer; color: #666; }
-.filter-section ul li:hover { color: #000; font-weight: bold; }
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:20px;padding:20px}
+.card{background:#fff;border:1px solid #eee;border-radius:10px;overflow:hidden}
+.card img{width:100%;height:250px;object-fit:cover}
+.info{padding:10px}
+button{width:100%;padding:10px;background:#000;color:#fff;border:none;margin-top:10px}
 
-.content { flex: 1; }
-.product-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(260px,1fr)); gap: 20px; }
-
-.product-card { background: #fff; border-radius: 15px; border: 1px solid #eee; overflow: hidden; }
-.product-img { height: 300px; }
-.product-img img { width: 100%; height: 100%; object-fit: cover; }
-
-.product-info { padding: 15px; }
-.btn-add-cart { width: 100%; background: #000; color: white; border: none; padding: 10px; border-radius: 8px; margin-top: 10px; cursor: pointer; }
-
-.modal { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,.6); display:none; justify-content:center; align-items:center; }
-.modal-content { background:white; padding:20px; border-radius:10px; width:90%; max-width:500px; }
-
+.modal{position:fixed;top:0;left:0;width:100%;height:100%;background:#0008;display:none;justify-content:center;align-items:center}
+.box{background:#fff;padding:20px;width:90%;max-width:400px}
 </style>
 </head>
 
 <body>
 
 <header>
-<a href="#" class="logo">STAR</a>
-<div class="cart-icon" onclick="toggleCart()">🛒 <span id="cart-count">0</span></div>
+<h2>STAR</h2>
+<div class="cart" onclick="toggleCart()">🛒 <span id="count">0</span></div>
 </header>
 
-<div class="main-wrapper">
+<div class="grid" id="products">جاري التحميل...</div>
 
-<aside>
-<h4>الأقسام</h4>
-<ul>
-<li onclick="loadProducts('all')">الكل</li>
-<li onclick="loadProducts('إكسسوارات')">إكسسوارات</li>
-<li onclick="loadProducts('شنط')">شنط</li>
-<li onclick="loadProducts('ملابس حريمي')">ملابس حريمي</li>
-</ul>
-</aside>
-
-<main class="content">
-<div class="product-grid" id="products">جاري التحميل...</div>
-</main>
-
-</div>
-
-<div class="modal" id="cartModal">
-<div class="modal-content">
-
+<div class="modal" id="cartBox">
+<div class="box">
 <h3>السلة</h3>
-<div id="cart-items"></div>
-<p>الإجمالي: <span id="total">0</span> + 70 شحن</p>
+<div id="items"></div>
+<p>الإجمالي: <span id="total">0</span> + 70</p>
 
-<form id="orderForm">
-<input type="text" id="name" placeholder="الاسم" required>
-<input type="tel" id="phone" placeholder="الموبايل" required>
-<input type="text" id="address" placeholder="العنوان" required>
+<form id="order">
+<input id="name" placeholder="الاسم" required>
+<input id="phone" placeholder="رقمك" required>
+<input id="addr" placeholder="العنوان" required>
 
-<select id="payment">
+<select id="pay">
 <option value="">طريقة الدفع</option>
 <option value="cash">كاش</option>
-<option value="vodafone">فودافون / انستا</option>
+<option value="vodafone">فودافون/انستا</option>
 <option value="etisalat">اتصالات</option>
 </select>
 
-<div id="note" style="display:none;color:red;font-size:12px;">
-يرجى تحويل المبلغ وارسال اسكرين واتساب  
-<a href="https://wa.me/201105932868" target="_blank">01105932868</a>
+<div id="note" style="display:none;color:red;font-size:12px">
+حول وابعتي اسكرين واتساب  
+<a href="https://wa.me/201105932868">01105932868</a>
 </div>
 
-<button type="submit" class="btn-add-cart">اطلب</button>
-
+<button>اطلب</button>
 </form>
-
 </div>
 </div>
 
@@ -97,79 +64,70 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebas
 import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 const app = initializeApp({
-apiKey: "AIza...",
-projectId: "starstore-4b932"
+apiKey:"AIzaSyDq6x2sA7DlFrCHVqpjOROsFUYPH3Rcpts",
+projectId:"starstore-4b932"
 });
 
-const db = getFirestore(app);
+const db=getFirestore(app);
 
-let allProducts = [];
-let cart = [];
+let all=[],cart=[];
 
 onSnapshot(collection(db,"products"), snap=>{
-allProducts = [];
-snap.forEach(doc=>{
-allProducts.push({id:doc.id,...doc.data()});
-});
-loadProducts();
+all=[];
+snap.forEach(d=>all.push(d.data()));
+show();
 });
 
-window.loadProducts = function(cat="all"){
+function show(){
 let html="";
-let data = cat==="all"? allProducts : allProducts.filter(p=>p.category===cat);
-
-data.forEach(p=>{
+all.forEach(p=>{
 html+=`
-<div class="product-card">
-<div class="product-img"><img src="${p.image}"></div>
-<div class="product-info">
+<div class="card">
+<img src="${p.image}">
+<div class="info">
 <h4>${p.name}</h4>
 <p>${p.price} ج</p>
-<button class="btn-add-cart" onclick="addToCart('${p.name}',${p.price})">أضف</button>
+<button onclick="add('${p.name}',${p.price})">أضف</button>
 </div>
 </div>`;
 });
-
-document.getElementById("products").innerHTML = html || "لا يوجد منتجات";
+document.getElementById("products").innerHTML=html||"لا يوجد منتجات";
 }
 
-window.addToCart=(n,p)=>{
+window.add=(n,p)=>{
 cart.push({n,p});
-updateCart();
+update();
 }
 
-function updateCart(){
-document.getElementById("cart-count").innerText = cart.length;
-let t=0,html="";
+function update(){
+document.getElementById("count").innerText=cart.length;
+let t=0,h="";
 cart.forEach(i=>{
 t+=parseInt(i.p);
-html+=`<div>${i.n} - ${i.p}</div>`;
+h+=`<div>${i.n} - ${i.p}</div>`;
 });
-document.getElementById("cart-items").innerHTML=html;
+document.getElementById("items").innerHTML=h;
 document.getElementById("total").innerText=t;
 }
 
 window.toggleCart=()=>{
-let m=document.getElementById("cartModal");
-m.style.display = m.style.display==="flex"?"none":"flex";
+let m=document.getElementById("cartBox");
+m.style.display=m.style.display=="flex"?"none":"flex";
 }
 
-document.getElementById("payment").onchange=function(){
-document.getElementById("note").style.display =
-(this.value==="vodafone"||this.value==="etisalat")?"block":"none";
+document.getElementById("pay").onchange=function(){
+document.getElementById("note").style.display=
+(this.value=="vodafone"||this.value=="etisalat")?"block":"none";
 }
 
-document.getElementById("orderForm").onsubmit=e=>{
+document.getElementById("order").onsubmit=e=>{
 e.preventDefault();
 
-let pay=document.getElementById("payment").value;
-let msg=`طلب:
-${document.getElementById("name").value}
-${document.getElementById("phone").value}
+let msg="طلب جديد:\n";
+msg+=document.getElementById("name").value+"\n";
+msg+=document.getElementById("phone").value+"\n";
 
-`;
-
-cart.forEach(i=> msg+=`${i.n} - ${i.p}\n`);
+cart.forEach(i=> msg+=i.n+" - "+i.p+"\n");
 
 window.open("https://wa.me/201105932868?text="+encodeURIComponent(msg));
 }
