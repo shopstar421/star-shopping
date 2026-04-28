@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STAR STORE | المتجر الرسمي</title>
+    <link href="https://googleapis.com" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
+        body { background-color: #fcfcfc; color: #333; overflow-x: hidden; }
+        header { background: white; padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; position: sticky; top: 0; z-index: 100; }
+        .logo { font-size: 26px; font-weight: 800; letter-spacing: 3px; color: #000; text-decoration: none; }
+        .cart-icon { position: relative; cursor: pointer; font-size: 16px; font-weight: 600; background: #000; color: #fff; padding: 8px 18px; border-radius: 25px; }
+        .cart-count { position: absolute; top: -5px; right: -5px; background: #e74c3c; color: white; border-radius: 50%; padding: 2px 6px; font-size: 10px; }
+        .main-wrapper { display: flex; padding: 30px 5%; max-width: 1400px; margin: 0 auto; gap: 30px; }
+        aside { width: 220px; flex-shrink: 0; }
+        .filter-section h4 { margin-bottom: 15px; font-size: 16px; border-bottom: 2px solid #000; display: inline-block; padding-bottom: 5px; }
+        .filter-section ul { list-style: none; }
+        .filter-section ul li { margin-bottom: 12px; cursor: pointer; font-size: 14px; color: #666; transition: 0.3s; }
+        .filter-section ul li:hover { color: #000; font-weight: 600; }
+        .content { flex-grow: 1; }
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 25px; }
+        .product-card { background: white; border-radius: 15px; overflow: hidden; border: 1px solid #eee; transition: 0.3s; position: relative; }
+        .product-img { width: 100%; height: 320px; background: #f9f9f9; position: relative; }
+        .product-img img { width: 100%; height: 100%; object-fit: cover; }
+        .product-info { padding: 15px; }
+        .btn-add-cart { width: 100%; background: #000; color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; margin-top: 10px; font-weight: 600; }
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: none; justify-content: center; align-items: center; z-index: 1000; padding: 20px; }
+        .modal-content { background: white; padding: 25px; border-radius: 15px; width: 100%; max-width: 550px; max-height: 90vh; overflow-y: auto; }
+        .cart-item { display: flex; align-items: center; border-bottom: 1px solid #eee; padding: 12px 0; gap: 15px; }
+        .cart-item img { width: 60px; height: 60px; object-fit: cover; border-radius: 8px; }
+        .qty-controls { display: flex; align-items: center; gap: 10px; margin-top: 5px; }
+        .qty-btn { background: #eee; border: none; width: 25px; height: 25px; cursor: pointer; border-radius: 5px; font-weight: bold; }
+        .checkout-form input, .checkout-form select, .checkout-form textarea { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 8px; outline: none; }
+        .sold-out-badge { position: absolute; top: 10px; left: 10px; background: #ff4d4d; color: white; padding: 5px 12px; border-radius: 5px; font-size: 12px; font-weight: bold; z-index: 5; }
+        .wa-sidebar-link { color: #25d366; text-decoration: none; font-weight: bold; font-size: 14px; display: block; margin-top: 10px; }
+        @media (max-width: 768px) { .main-wrapper { flex-direction: column; } aside { width: 100%; } }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="index.html" class="logo">STAR</a>
+        <div class="cart-icon" onclick="toggleCart()">
+            🛒 السلة <span class="cart-count" id="cart-count">0</span>
+        </div>
+    </header>
+
+    <div class="main-wrapper">
+        <aside>
+            <div class="filter-section">
+                <h4>الأقسام</h4>
+                <ul>
+                    <li onclick="displayProducts('all')">عرض الكل</li>
+                    <li onclick="displayProducts('إكسسوارات')">إكسسوارات</li>
+                    <li onclick="displayProducts('شنط')">شنط</li>
+                    <li onclick="displayProducts('نضارات')">نضارات</li>
+                    <li onclick="displayProducts('ملابس أطفال')">ملابس أطفال</li>
+                    <li onclick="displayProducts('ملابس حريمي')">ملابس حريمي</li>
+                    <li onclick="displayProducts('ملابس رجالي')">ملابس رجالي</li>
+                    <li onclick="displayProducts('أحذية')">أحذية</li>
+                    <li onclick="displayProducts('مستحضرات تجميل')">مستحضرات تجميل</li>
+                </ul>
+                <div style="margin-top: 20px; border-top: 1px solid #eee; padding-top: 10px;">
+                    <p style="font-size: 12px; color: #888;">للتواصل:</p>
+
+                    <a href="https://wa.me/201105932868" target="_blank" class="wa-sidebar-link">🟢 واتساب: 01105932868</a>
+                </div>
+            </div>
+        </aside>
+
+        <main class="content">
+            <h2 id="view-title" style="margin-bottom: 25px; font-size: 22px;">أحدث الموديلات</h2>
+            <div class="product-grid" id="product-display"></div>
+        </main>
+    </div>
+
+    <div class="modal" id="cartModal">
+        <div class="modal-content">
+            <h3 style="margin-bottom: 15px; border-bottom: 2px solid #000;">سلة المشتريات</h3>
+            <div id="cart-items-list"></div>
+            <div style="background: #f9f9f9; padding: 15px; border-radius: 10px; margin-top:15px; display:flex; justify-content: space-between; font-weight: bold;">
+                <span>الإجمالي (شامل شحن الفيوم):</span>
+                <span><span id="total-price">0</span> ج.م</span>
+            </div>
+
+            <form class="checkout-form" id="orderForm" style="margin-top: 25px;">
+                <input type="text" id="custName" placeholder="الاسم الكامل" required>
+                <input type="tel" id="custPhone" placeholder="رقم الهاتف" required>
+                <select id="governorate" onchange="updateCartUI()" required>
+                    <option value="70">الفيوم (شحن 70 ج.م ثابت)</option>
+                </select>
+                <input type="text" id="custAddr" placeholder="العنوان بالتفصيل" required>
+                <textarea id="custNote" placeholder="أي ملاحظات إضافية..." rows="2"></textarea>
+                <select id="payMethod" onchange="updatePayInfo()" required>
+                    <option value="كاش">💵 دفع عند الاستلام</option>
+                    <option value="فودافون كاش / انستا باي">📱 فودافون كاش / انستا باي</option>
+                    <option value="اتصالات كاش">📱 اتصالات كاش</option>
+                </select>
+   
+                <div id="payInstructions" style="display:none; background:#fff9c4; padding:12px; border-radius:8px; font-size:13px; margin-top:8px; border:1px dashed #fbc02d;"></div>
+                
+                <div style="display: flex; gap: 10px; margin-top: 20px;">
+                    <button type="button" class="btn-add-cart" style="background: #eee; color: #333;" onclick="toggleCart()">إغلاق</button>
+                    <button type="submit" class="btn-add-cart">تأكيد الطلب عبر واتساب</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+
+        let cart = JSON.parse(localStorage.getItem('STAR_SHOP_V10')) || [];
+
+        function displayProducts(filter = 'all') {
+            const display = document.getElementById('product-display');
+            const products = JSON.parse(localStorage.getItem('myProducts')) || [];
+            display.innerHTML = "";
+            const filtered = filter === 'all' ? products : products.filter(p => p.category === filter);
+            filtered.forEach((p) => {
+                display.innerHTML += `
+                    <div class="product-card">
+                        ${p.soldOut ? '<div class="sold-out-badge">نفذت الكمية</div>' : ''}
+                        <div class="product-img"><img src="${p.image}" style="${p.soldOut ? 'filter:grayscale(1); opacity:0.6' : ''}"></div>
+                        <div class="product-info">
+                            <h3 style="font-size:15px;">${p.name} [${p.code}]</h3>
+                            <p style="font-weight:700; margin-top:5px;">${p.price} ج.م</p>
+                            <button class="btn-add-cart" onclick="addToCart('${p.name}', ${p.price}, '${p.image}', '${p.code}')" ${p.soldOut ? 'disabled' : ''}>
+                                ${p.soldOut ? 'غير متوفر' : 'أضف للسلة'}
+                            </button>
+                        </div>
+                    </div>`;
+            });
+        }
+
+        function addToCart(name, price, image, code) {
+            let existing = cart.find(item => item.name === name);
+            if (existing) { existing.qty++; } else { cart.push({name, price, image, code, qty: 1}); }
+            saveCart();
+            updateCartUI();
+        }
+
+        function changeQty(index, delta) {
+            cart[index].qty += delta;
+            if (cart[index].qty < 1) cart.splice(index, 1);
+            saveCart();
+            updateCartUI();
+        }
+
+        function saveCart() {
+            localStorage.setItem('STAR_SHOP_V10', JSON.stringify(cart));
+        }
+
+        function updateCartUI() {
+            document.getElementById('cart-count').innerText = cart.reduce((total, item) => total + item.qty, 0);
+            const list = document.getElementById('cart-items-list');
+            list.innerHTML = "";
+            let sub = 0;
+            
+            cart.forEach((item, i) => {
+                let itemTotal = parseFloat(item.price) * item.qty;
+                sub += itemTotal;
+                list.innerHTML += `<div class="cart-item"><img src="${item.image}"><div style="flex-grow:1"><p style="font-weight:600">${item.name}</p>
+                    <b>${item.price} ج.م</b><div class="qty-controls"><button class="qty-btn" onclick="changeQty(${i}, -1)">-</button><span>${item.qty}
+                        </span>
+                        <button class="qty-btn" onclick="changeQty(${i}, 1)">+</button></div></div><b>${itemTotal} ج.م</b></div>`;
+            });
+            
+            document.getElementById('total-price').innerText = sub + 70;
+        }
+
+        function updatePayInfo() {
+            const m = document.getElementById('payMethod').value;
+            const box = document.getElementById('payInstructions');
+    
+            const myDirectWa = "https://wa.me/201105932868";
+            box.style.display = (m !== 'كاش') ? 'block' : 'none';
+            let msg = `<br>⚠️ يرجى إرسال إيصال التحويل هنا: <a href="${myDirectWa}" target="_blank" style="color:#25d366; font-weight:bold;">واتساب المتجر</a>`;
+            if(m.includes('فودافون')) box.innerHTML = `فودافون كاش / انستا باي: <b>01021354454</b>` + msg;
+            else if(m.includes('اتصالات')) box.innerHTML = `اتصالات كاش: <b>01105932868</b>` + msg;
+        }
+
+        function toggleCart() {
+            const modal = document.getElementById('cartModal');
+            modal.style.display = (modal.style.display === 'flex') ? 'none' : 'flex';
+        }
+
+        document.getElementById('orderForm').onsubmit = function(e) {
+            e.preventDefault();
+            if(cart.length === 0) return alert("السلة فارغة!");
+            
+            let itemsText = "";
+            cart.forEach(item => itemsText += `- ${item.name} [كود:${item.code}] (عدد:${item.qty}) = ${item.price * item.qty}ج\n`);
+            
+            const msg = `*طلب جديد من STAR STORE* 🌟\n` +
+                        `العميل: ${document.getElementById('custName').value}\n` +
+                        `الهاتف: ${document.getElementById('custPhone').value}\n` +
+                        `العنوان: ${document.getElementById('custAddr').value}\n` +
+                        `الدفع: ${document.getElementById('payMethod').value}\n` +
+                        `الملاحظات: ${document.getElementById('custNote').value || 'لا يوجد'}\n\n` +
+                        `المنتجات:\n${itemsText}\n` +
+                        `*الإجمالي النهائي:* ${document.getElementById('total-price').innerText} ج.م`;
+
+           const phoneNumber = "201105932868"; 
+
+const finalLink = "https://wa.me/" + phoneNumber + "?text=" + encodeURIComponent(msg);
+
+window.open(finalLink, '_blank');
+
+            cart = []; 
+            saveCart();
+            updateCartUI(); 
+            toggleCart();
+        };
+
+  
+        window.onload = () => { displayProducts('all'); updateCartUI(); };
+    </script>
+</body>
+</html>
