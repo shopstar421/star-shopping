@@ -1,65 +1,103 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<title>ADMIN</title>
+<title>إدارة STAR STORE</title>
+
+<style>
+body { font-family: Cairo; background:#f4f4f4; text-align:center; }
+.box { background:#fff; padding:20px; border-radius:10px; max-width:400px; margin:auto; margin-top:50px; }
+input,select,button { width:100%; padding:10px; margin:10px 0; }
+button { background:#27ae60; color:#fff; border:none; }
+</style>
 </head>
 
 <body>
 
 <script>
-if(sessionStorage.getItem("auth")!=="yes"){
-let p=prompt("الباسورد");
-if(p==="1234"){
-sessionStorage.setItem("auth","yes");
-}else{
-document.body.innerHTML="غير مصرح";
-}
+const PASSWORD = "1234";
+
+if (localStorage.getItem("auth") !== "yes") {
+    const entered = prompt("ادخل باسورد الادمن");
+    if (entered === PASSWORD) {
+        localStorage.setItem("auth", "yes");
+    } else {
+        document.body.innerHTML = "<h2>غير مصرح</h2>";
+    }
 }
 </script>
 
+<div class="box">
 <h2>إضافة منتج</h2>
 
-<form id="f">
-<input id="n" placeholder="اسم">
-<input id="p" placeholder="سعر">
-<input id="c" placeholder="قسم">
-<input type="file" id="img">
-<button>حفظ</button>
+<form id="pForm">
+<input id="n" placeholder="اسم المنتج" required>
+<input id="p" placeholder="السعر" required>
+
+<select id="c">
+<option>إكسسوارات</option>
+<option>شنط</option>
+<option>نضارات</option>
+<option>ملابس أطفال</option>
+<option>ملابس حريمي</option>
+<option>ملابس رجالي</option>
+<option>أحذية</option>
+<option>مستحضرات تجميل</option>
+</select>
+
+<input type="file" id="i" required>
+
+<button>نشر المنتج</button>
 </form>
+</div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-const app = initializeApp({
-apiKey: "AIza...",
-projectId: "starstore-4b932"
-});
+const firebaseConfig = {
+  apiKey: "AIzaSyDq6x2sA7DlFrCHVqpjOROsFUYPH3Rcpts",
+  authDomain: "starstore-4b932.firebaseapp.com",
+  projectId: "starstore-4b932",
+  storageBucket: "starstore-4b932.appspot.com",
+  messagingSenderId: "285327083767",
+  appId: "1:285327083767:web:1851756694916f5320abf2"
+};
 
+const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-document.getElementById("f").onsubmit=e=>{
-e.preventDefault();
+document.getElementById("pForm").onsubmit = async (e) => {
+    e.preventDefault();
 
-let file=document.getElementById("img").files[0];
-let reader=new FileReader();
+    const name = document.getElementById("n").value;
+    const price = document.getElementById("p").value;
+    const category = document.getElementById("c").value;
+    const file = document.getElementById("i").files[0];
 
-reader.onload=async e=>{
-await addDoc(collection(db,"products"),{
-name:document.getElementById("n").value,
-price:document.getElementById("p").value,
-category:document.getElementById("c").value,
-image:e.target.result,
-createdAt:Date.now()
-});
+    const reader = new FileReader();
 
-alert("تم");
-location.reload();
-}
+    reader.onload = async () => {
+        try {
+            await addDoc(collection(db, "products"), {
+                name,
+                price,
+                category,
+                image: reader.result,
+                createdAt: Date.now(),
+                soldOut: false
+            });
 
-reader.readAsDataURL(file);
-}
+            alert("تم إضافة المنتج ✅");
+            document.getElementById("pForm").reset();
+
+        } catch (err) {
+            alert("خطأ: " + err.message);
+        }
+    };
+
+    reader.readAsDataURL(file);
+};
 </script>
 
 </body>
