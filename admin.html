@@ -1,76 +1,66 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar">
 <head>
-    <meta charset="UTF-8">
-    <title>إدارة STAR STORE</title>
-    <style>
-        body { font-family: 'Cairo', sans-serif; background: #f4f4f4; padding: 20px; text-align: center; }
-        .box { background: white; padding: 20px; border-radius: 10px; max-width: 400px; margin: auto; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-        input, select, button { width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px; border: 1px solid #ddd; }
-        .btn { background: #27ae60; color: white; border: none; cursor: pointer; font-weight: bold; }
-    </style>
+<meta charset="UTF-8">
+<title>ADMIN</title>
 </head>
+
 <body>
-<div class="box">
-    <h2>إضافة منتج جديد</h2>
-    <form id="pForm">
-        <input type="text" id="n" placeholder="اسم المنتج" required>
-        <input type="number" id="p" placeholder="السعر" required>
-        <select id="c">
-            <option>إكسسوارات</option><option>شنط</option><option>نضارات</option>
-            <option>ملابس أطفال</option><option>ملابس حريمي</option><option>ملابس رجالي</option>
-            <option>أحذية</option><option>مستحضرات تجميل</option>
-        </select>
-        <input type="file" id="i" accept="image/*" required>
-        <button type="submit" class="btn" id="sub">نشر المنتج الآن</button>
-    </form>
-</div>
+
+<script>
+if(sessionStorage.getItem("auth")!=="yes"){
+let p=prompt("الباسورد");
+if(p==="1234"){
+sessionStorage.setItem("auth","yes");
+}else{
+document.body.innerHTML="غير مصرح";
+}
+}
+</script>
+
+<h2>إضافة منتج</h2>
+
+<form id="f">
+<input id="n" placeholder="اسم">
+<input id="p" placeholder="سعر">
+<input id="c" placeholder="قسم">
+<input type="file" id="img">
+<button>حفظ</button>
+</form>
 
 <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    const firebaseConfig = {
-        apiKey: "AIzaSyDq6x2sA7DlFrCHVqpjOROsFUYPH3Rcpts",
-        authDomain: "starstore-4b932.firebaseapp.com",
-        projectId: "starstore-4b932",
-        storageBucket: "starstore-4b932.firebasestorage.app",
-        messagingSenderId: "285327083767",
-        appId: "1:285327083767:web:1851756694916f5320abf2"
-    };
+const app = initializeApp({
+apiKey: "AIza...",
+projectId: "starstore-4b932"
+});
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+const db = getFirestore(app);
 
-    document.getElementById('pForm').onsubmit = async (e) => {
-        e.preventDefault();
-        const btn = document.getElementById('sub');
-        btn.innerText = "جاري الرفع...";
-        btn.disabled = true;
+document.getElementById("f").onsubmit=e=>{
+e.preventDefault();
 
-        const file = document.getElementById('i').files[0];
-        const reader = new FileReader();
-        
-        reader.onload = async (event) => {
-            try {
-                await addDoc(collection(db, "products"), {
-                    name: document.getElementById('n').value,
-                    price: document.getElementById('p').value,
-                    category: document.getElementById('c').value,
-                    image: event.target.result,
-                    createdAt: Date.now(),
-                    soldOut: false
-                });
-                alert("تمت الإضافة بنجاح! افتحي صفحة المتجر الآن.");
-                location.reload();
-            } catch (err) {
-                alert("خطأ: " + err.message);
-                btn.disabled = false;
-                btn.innerText = "نشر المنتج الآن";
-            }
-        };
-        reader.readAsDataURL(file);
-    };
+let file=document.getElementById("img").files[0];
+let reader=new FileReader();
+
+reader.onload=async e=>{
+await addDoc(collection(db,"products"),{
+name:document.getElementById("n").value,
+price:document.getElementById("p").value,
+category:document.getElementById("c").value,
+image:e.target.result,
+createdAt:Date.now()
+});
+
+alert("تم");
+location.reload();
+}
+
+reader.readAsDataURL(file);
+}
 </script>
+
 </body>
 </html>
