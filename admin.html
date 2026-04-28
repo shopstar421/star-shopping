@@ -2,25 +2,26 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>إدارة STAR STORE</title>
     <link href="https://googleapis.com" rel="stylesheet">
     <style>
-        * { font-family: 'Cairo', sans-serif; box-sizing: border-box; }
-        body { background: #f4f4f4; padding: 20px; text-align: center; }
-        .box { background: white; padding: 20px; border-radius: 10px; max-width: 500px; margin: auto; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-        input, select, button { width: 100%; padding: 10px; margin: 10px 0; border-radius: 5px; border: 1px solid #ccc; }
+        body { font-family: 'Cairo', sans-serif; background: #f4f4f4; padding: 20px; text-align: center; }
+        .box { background: white; padding: 20px; border-radius: 10px; max-width: 400px; margin: auto; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        input, select, button { width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px; border: 1px solid #ddd; }
         .btn { background: #27ae60; color: white; border: none; cursor: pointer; font-weight: bold; }
     </style>
 </head>
 <body>
-
 <div class="box">
     <h2>إضافة منتج جديد</h2>
     <form id="pForm">
         <input type="text" id="n" placeholder="اسم المنتج" required>
         <input type="number" id="p" placeholder="السعر" required>
-        <input type="text" id="c" placeholder="الكود">
+        <select id="c">
+            <option>إكسسوارات</option><option>شنط</option><option>نضارات</option>
+            <option>ملابس أطفال</option><option>ملابس حريمي</option><option>ملابس رجالي</option>
+            <option>أحذية</option><option>مستحضرات تجميل</option>
+        </select>
         <input type="file" id="i" accept="image/*" required>
         <button type="submit" class="btn" id="sub">نشر المنتج الآن</button>
     </form>
@@ -54,11 +55,11 @@
                 await addDoc(collection(db, "products"), {
                     name: document.getElementById('n').value,
                     price: document.getElementById('p').value,
-                    code: document.getElementById('c').value,
+                    category: document.getElementById('c').value,
                     image: event.target.result,
                     createdAt: Date.now()
                 });
-                alert("مبروك! المنتج نزل على الموقع");
+                alert("تمت الإضافة بنجاح! افتحي صفحة المتجر الآن.");
                 location.reload();
             } catch (err) {
                 alert("خطأ: " + err.message);
@@ -71,4 +72,3 @@
 </script>
 </body>
 </html>
-
