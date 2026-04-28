@@ -12,17 +12,14 @@
         h2, h3 { margin-bottom: 20px; border-bottom: 2px solid #eee; padding-bottom: 10px; }
         .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
         input, select, textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; margin-top: 5px; outline: none; }
-        input:focus { border-color: #000; }
         .btn-add { background: #27ae60; color: white; border: none; padding: 15px; width: 100%; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 16px; }
-        
         table { width: 100%; border-collapse: collapse; margin-top: 30px; }
         th, td { padding: 12px; text-align: center; border-bottom: 1px solid #eee; }
-        th { background: #f4f4f4; font-size: 14px; }
-        .btn-sold { background: #f39c12; color: white; border: none; padding: 6px 12px; border-radius: 5px; cursor: pointer; margin: 2px; }
-        .btn-del { background: #e74c3c; color: white; border: none; padding: 6px 12px; border-radius: 5px; cursor: pointer; margin: 2px; }
+        th { background: #f4f4f4; }
+        .btn-sold { background: #f39c12; color: white; border: none; padding: 6px 12px; border-radius: 5px; cursor: pointer; }
+        .btn-del { background: #e74c3c; color: white; border: none; padding: 6px 12px; border-radius: 5px; cursor: pointer; }
         .status-on { color: #27ae60; font-weight: bold; }
         .status-off { color: #e74c3c; font-weight: bold; }
-        .img-table { border-radius: 5px; object-fit: cover; }
     </style>
 </head>
 <body>
@@ -32,140 +29,115 @@
     <form id="productForm">
         <div class="form-grid">
             <div><label>اسم المنتج</label><input type="text" id="pName" required></div>
-            <div><label>كود المنتج</label><input type="text" id="pCode" placeholder="مثلاً: A101" required></div>
+            <div><label>كود المنتج</label><input type="text" id="pCode" required></div>
             <div><label>السعر (ج.م)</label><input type="number" id="pPrice" required></div>
             <div>
                 <label>القسم</label>
                 <select id="pCat">
-                    <option>إكسسوارات</option>
-                    <option>شنط</option>
-                    <option>نضارات</option>
-                    <option>ملابس أطفال</option>
-                    <option>ملابس حريمي</option>
-                    <option>ملابس رجالي</option>
-                    <option>أحذية</option>
-                    <option>مستحضرات تجميل</option>
+                    <option>إكسسوارات</option><option>شنط</option><option>نضارات</option>
+                    <option>ملابس أطفال</option><option>ملابس حريمي</option>
+                    <option>ملابس رجالي</option><option>أحذية</option><option>مستحضرات تجميل</option>
                 </select>
             </div>
             <div><label>صورة المنتج</label><input type="file" id="pImage" accept="image/*" required></div>
         </div>
-        <textarea id="pDesc" placeholder="وصف قصير للمنتج..." rows="2"></textarea>
-        <button type="submit" class="btn-add">إضافة المنتج للموقع الآن</button>
+        <textarea id="pDesc" placeholder="وصف قصير..." rows="2"></textarea>
+        <button type="submit" class="btn-add" id="submitBtn">إضافة المنتج للموقع الآن</button>
     </form>
 
     <div style="margin-top: 50px; overflow-x: auto;">
         <h3>إدارة المنتجات المنشورة</h3>
-        <table id="adminTable">
-            <thead>
-                <tr>
-                    <th>الصورة</th>
-                    <th>الاسم</th>
-                    <th>الكود</th>
-                    <th>الحالة</th>
-                    <th>التحكم</th>
-                </tr>
-            </thead>
+        <table>
+            <thead><tr><th>الصورة</th><th>الاسم</th><th>الكود</th><th>الحالة</th><th>التحكم</th></tr></thead>
             <tbody id="adminList"></tbody>
         </table>
     </div>
 </div>
 
-<script>
-    // حماية الدخول بالباسورد الجديد
+<!-- Firebase SDKs -->
+<script type="module">
+    import { initializeApp } from "https://gstatic.com";
+    import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc, onSnapshot } 
+    from "https://gstatic.com";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyDq6x2sA7DlFrCHVqpjOROsFUYPH3Rcpts",
+        authDomain: "://firebaseapp.com",
+        projectId: "starstore-4b932",
+        storageBucket: "starstore-4b932.firebasestorage.app",
+        messagingSenderId: "285327083767",
+        appId: "1:285327083767:web:1851756694916f5320abf2"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const productsCol = collection(db, 'products');
+
+    // حماية الدخول
     let pass = prompt("أدخل كلمة المرور للإدارة:");
-    if(pass !== "mmaahh123") { 
-        alert("كلمة المرور خاطئة!");
-        window.location.href="index.html"; 
-    }
+    if(pass !== "mmaahh123") { window.location.href="index.html"; }
 
     const form = document.getElementById('productForm');
 
-    // دالة لعرض المنتجات في جدول الإدارة
-    function renderAdmin() {
-        const products = JSON.parse(localStorage.getItem('myProducts')) || [];
-        const list = document.getElementById('adminList');
-        list.innerHTML = "";
-        
-        products.forEach((p, index) => {
-            list.innerHTML += `
-                <tr>
-                    <td><img src="${p.image}" class="img-table" width="50" height="50"></td>
-                    <td>${p.name}</td>
-                    <td>${p.code || '---'}</td>
-                    <td class="${p.soldOut ? 'status-off' : 'status-on'}">${p.soldOut ? 'نفذت الكمية' : 'متوفر'}</td>
-                    <td>
-                        <button class="btn-sold" onclick="toggleSold(${index})">تبديل الحالة</button>
-                        <button class="btn-del" onclick="deleteProduct(${index})">حذف</button>
-                    </td>
-                </tr>`;
-        });
-    }
-
-    // معالجة إضافة المنتج مع ضغط الصورة
-    form.onsubmit = function(e) {
+    // إضافة منتج
+    form.onsubmit = async (e) => {
         e.preventDefault();
-        const fileInput = document.getElementById('pImage');
-        if (fileInput.files.length === 0) return;
+        const btn = document.getElementById('submitBtn');
+        btn.innerText = "جاري الرفع...";
+        btn.disabled = true;
 
+        const file = document.getElementById('pImage').files[0];
         const reader = new FileReader();
-        reader.onload = function(event) {
-            const img = new Image();
-            img.onload = function() {
-                // تقليل حجم الصورة برمجياً لضمان عدم امتلاء الذاكرة
-                const canvas = document.createElement('canvas');
-                const MAX_WIDTH = 500; 
-                const scaleSize = MAX_WIDTH / img.width;
-                canvas.width = MAX_WIDTH;
-                canvas.height = img.height * scaleSize;
-
-                const ctx = canvas.getContext('2d');
-                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                
-                // تحويل الصورة لـ JPEG مضغوط بنسبة 70%
-                const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.7);
-
-                const products = JSON.parse(localStorage.getItem('myProducts')) || [];
-                products.push({
+        
+        reader.onload = async (event) => {
+            try {
+                await addDoc(productsCol, {
                     name: document.getElementById('pName').value,
                     code: document.getElementById('pCode').value,
                     price: document.getElementById('pPrice').value,
                     category: document.getElementById('pCat').value,
                     desc: document.getElementById('pDesc').value,
-                    image: compressedDataUrl,
-                    soldOut: false
+                    image: event.target.result, // حفظ كـ Base64 للسهولة
+                    soldOut: false,
+                    createdAt: Date.now()
                 });
-
-                try {
-                    localStorage.setItem('myProducts', JSON.stringify(products));
-                    form.reset();
-                    renderAdmin();
-                    alert("تم إضافة المنتج بنجاح!");
-                } catch (error) {
-                    alert("عذراً، مساحة التخزين ممتلئة. يرجى حذف بعض المنتجات القديمة.");
-                }
-            };
-            img.src = event.target.result;
+                form.reset();
+                alert("تمت الإضافة بنجاح!");
+            } catch (err) { alert("خطأ في الرفع!"); }
+            btn.innerText = "إضافة المنتج للموقع الآن";
+            btn.disabled = false;
         };
-        reader.readAsDataURL(fileInput.files[0]);
+        reader.readAsDataURL(file);
     };
 
-    function deleteProduct(i) {
-        if(confirm("هل أنت متأكد من حذف هذا المنتج؟")) {
-            let products = JSON.parse(localStorage.getItem('myProducts'));
-            products.splice(i, 1);
-            localStorage.setItem('myProducts', JSON.stringify(products));
-            renderAdmin();
-        }
-    }
+    // عرض المنتجات وتحديثها لحظياً
+    onSnapshot(productsCol, (snapshot) => {
+        const list = document.getElementById('adminList');
+        list.innerHTML = "";
+        snapshot.forEach((docSnap) => {
+            const p = docSnap.data();
+            const id = docSnap.id;
+            list.innerHTML += `
+                <tr>
+                    <td><img src="${p.image}" width="50" height="50" style="object-fit:cover"></td>
+                    <td>${p.name}</td>
+                    <td>${p.code}</td>
+                    <td class="${p.soldOut ? 'status-off' : 'status-on'}">${p.soldOut ? 'نفذت' : 'متوفر'}</td>
+                    <td>
+                        <button class="btn-sold" onclick="toggleSold('${id}', ${p.soldOut})">تبديل</button>
+                        <button class="btn-del" onclick="deleteProd('${id}')">حذف</button>
+                    </td>
+                </tr>`;
+        });
+    });
 
-    function toggleSold(i) {
-        let products = JSON.parse(localStorage.getItem('myProducts'));
-        products[i].soldOut = !products[i].soldOut;
-        localStorage.setItem('myProducts', JSON.stringify(products));
-        renderAdmin();
-    }
+    window.deleteProd = async (id) => {
+        if(confirm("حذف المنتج؟")) await deleteDoc(doc(db, 'products', id));
+    };
 
-    window.onload = renderAdmin;
+    window.toggleSold = async (id, status) => {
+        await updateDoc(doc(db, 'products', id), { soldOut: !status });
+    };
 </script>
 </body>
 </html>
