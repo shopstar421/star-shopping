@@ -8,25 +8,31 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
         body { background-color: #fcfcfc; }
-        header { background: white; padding: 15px 5%; display: flex; justify-content: space-between; border-bottom: 1px solid #eee; position: sticky; top: 0; z-index: 100; }
+        header { background: white; padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
         .logo { font-size: 24px; font-weight: 800; color: #000; text-decoration: none; }
         .container { padding: 40px 5%; }
         .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 25px; }
-        .product-card { background: white; border-radius: 15px; overflow: hidden; border: 1px solid #eee; position: relative; }
+        .product-card { background: white; border-radius: 15px; overflow: hidden; border: 1px solid #eee; transition: 0.3s; position: relative; }
+        .product-card:hover { transform: translateY(-5px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
         .img-container { width: 100%; height: 300px; position: relative; }
         .product-img { width: 100%; height: 100%; object-fit: cover; }
-        .sold-out { position: absolute; top:0; background: rgba(255,255,255,0.7); width:100%; height:100%; display:flex; justify-content:center; align-items:center; color:red; font-weight:bold; }
+        .sold-out { position: absolute; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.7); display:flex; justify-content:center; align-items:center; color:red; font-weight:bold; font-size:18px; }
         .product-info { padding: 20px; text-align: center; }
-        .p-price { color: #27ae60; font-size: 20px; font-weight: 800; }
-        .btn-order { display: block; background: #000; color: white; padding: 12px; text-decoration: none; border-radius: 8px; margin-top: 10px; }
+        .p-name { font-size: 18px; margin: 10px 0; font-weight: 700; }
+        .p-price { color: #27ae60; font-size: 20px; font-weight: 800; margin-bottom: 15px; }
+        .btn-order { display: block; width: 100%; background: #000; color: white; padding: 12px; text-decoration: none; border-radius: 8px; font-weight: bold; }
+        @media (max-width: 600px) { .products-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; } .img-container { height: 200px; } .p-name { font-size: 14px; } }
     </style>
 </head>
 <body>
 
-<header><a href="#" class="logo">STAR STORE</a></header>
+<header>
+    <a href="#" class="logo">STAR STORE</a>
+    <div style="font-size: 12px; color: #666;">الفيوم - شحن 70 ج.م</div>
+</header>
 
 <div class="container">
-    <div class="products-grid" id="mainProducts">جاري تحميل المنتجات...</div>
+    <div class="products-grid" id="mainProducts">جاري تحميل أحدث الموديلات...</div>
 </div>
 
 <script type="module">
@@ -45,22 +51,33 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    onSnapshot(query(collection(db, 'products'), orderBy('createdAt', 'desc')), (snapshot) => {
+    const q = query(collection(db, 'products'), orderBy('createdAt', 'desc'));
+
+    onSnapshot(q, (snapshot) => {
         const container = document.getElementById('mainProducts');
         container.innerHTML = "";
+        
+        if(snapshot.empty) {
+            container.innerHTML = "<p style='grid-column: 1/-1; text-align:center;'>لا توجد منتجات حالياً.</p>";
+            return;
+        }
+
         snapshot.forEach(docSnap => {
             const p = docSnap.data();
-            const whatsappMsg = `https://wa.me منتج: ${p.name} (كود: ${p.code})`;
+            const whatsappMsg = `https://wa.meً STAR STORE، أريد طلب: ${p.name} (كود: ${p.code})`;
+            
             container.innerHTML += `
                 <div class="product-card">
                     <div class="img-container">
-                        <img src="${p.image}" class="product-img">
+                        <img src="${p.image}" class="product-img" loading="lazy">
                         ${p.soldOut ? '<div class="sold-out">نفذت الكمية</div>' : ''}
                     </div>
                     <div class="product-info">
-                        <h3>${p.name}</h3>
+                        <h3 class="p-name">${p.name}</h3>
                         <div class="p-price">${p.price} ج.م</div>
-                        <a href="${p.soldOut ? '#' : whatsappMsg}" class="btn-order" style="${p.soldOut ? 'background:#ccc' : ''}">
+                        <a href="${p.soldOut ? '#' : whatsappMsg}" class="btn-order" 
+                           style="${p.soldOut ? 'background:#ccc; cursor:not-allowed;' : ''}" 
+                           target="_blank">
                             ${p.soldOut ? 'غير متوفر' : 'اطلب عبر واتساب'}
                         </a>
                     </div>
