@@ -1,171 +1,179 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>STAR STORE | المتجر الرسمي</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
-        body { background-color: #fcfcfc; color: #333; overflow-x: hidden; }
-        header { background: white; padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; position: sticky; top: 0; z-index: 100; }
-        .logo { font-size: 26px; font-weight: 800; letter-spacing: 3px; color: #000; text-decoration: none; }
-        .cart-icon { position: relative; cursor: pointer; font-size: 16px; font-weight: 600; background: #000; color: #fff; padding: 8px 18px; border-radius: 25px; }
-        .cart-count { position: absolute; top: -5px; right: -5px; background: #e74c3c; color: white; border-radius: 50%; padding: 2px 6px; font-size: 10px; }
-        .main-wrapper { display: flex; padding: 30px 5%; max-width: 1400px; margin: 0 auto; gap: 30px; }
-        aside { width: 220px; flex-shrink: 0; }
-        .filter-section h4 { margin-bottom: 15px; font-size: 16px; border-bottom: 2px solid #000; display: inline-block; padding-bottom: 5px; }
-        .filter-section ul { list-style: none; }
-        .filter-section ul li { margin-bottom: 12px; cursor: pointer; font-size: 14px; color: #666; transition: 0.3s; }
-        .filter-section ul li:hover { color: #000; font-weight: 600; }
-        .content { flex-grow: 1; }
-        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 25px; }
-        .product-card { background: white; border-radius: 15px; overflow: hidden; border: 1px solid #eee; transition: 0.3s; position: relative; }
-        .product-img { width: 100%; height: 320px; background: #f9f9f9; position: relative; }
-        .product-img img { width: 100%; height: 100%; object-fit: cover; }
-        .product-info { padding: 15px; }
-        .btn-add-cart { width: 100%; background: #000; color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; margin-top: 10px; font-weight: 600; }
-        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: none; justify-content: center; align-items: center; z-index: 1000; padding: 20px; }
-        .modal-content { background: white; padding: 25px; border-radius: 15px; width: 100%; max-width: 550px; max-height: 90vh; overflow-y: auto; }
-        .cart-item { display: flex; align-items: center; border-bottom: 1px solid #eee; padding: 12px 0; gap: 15px; }
-        .cart-item img { width: 60px; height: 60px; object-fit: cover; border-radius: 8px; }
-        .checkout-form input { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 8px; outline: none; }
-        .sold-out-badge { position: absolute; top: 10px; left: 10px; background: #ff4d4d; color: white; padding: 5px 12px; border-radius: 5px; font-size: 12px; font-weight: bold; z-index: 5; }
-        .wa-sidebar-link { color: #25d366; text-decoration: none; font-weight: bold; font-size: 14px; display: block; margin-top: 10px; }
-        @media (max-width: 768px) { .main-wrapper { flex-direction: column; } aside { width: 100%; } }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>STAR STORE | المتجر الرسمي</title>
+
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
+body { background-color: #fcfcfc; color: #333; overflow-x: hidden; }
+header { background: white; padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; position: sticky; top: 0; z-index: 100; }
+.logo { font-size: 26px; font-weight: 800; letter-spacing: 3px; color: #000; text-decoration: none; }
+.cart-icon { position: relative; cursor: pointer; font-size: 16px; font-weight: 600; background: #000; color: #fff; padding: 8px 18px; border-radius: 25px; }
+.cart-count { position: absolute; top: -5px; right: -5px; background: #e74c3c; color: white; border-radius: 50%; padding: 2px 6px; font-size: 10px; }
+
+.main-wrapper { display: flex; padding: 30px 5%; max-width: 1400px; margin: 0 auto; gap: 30px; }
+aside { width: 220px; }
+.filter-section h4 { margin-bottom: 15px; border-bottom: 2px solid #000; display: inline-block; }
+.filter-section ul { list-style: none; }
+.filter-section ul li { margin-bottom: 10px; cursor: pointer; color: #666; }
+.filter-section ul li:hover { color: #000; font-weight: bold; }
+
+.content { flex: 1; }
+.product-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(260px,1fr)); gap: 20px; }
+
+.product-card { background: #fff; border-radius: 15px; border: 1px solid #eee; overflow: hidden; }
+.product-img { height: 300px; }
+.product-img img { width: 100%; height: 100%; object-fit: cover; }
+
+.product-info { padding: 15px; }
+.btn-add-cart { width: 100%; background: #000; color: white; border: none; padding: 10px; border-radius: 8px; margin-top: 10px; cursor: pointer; }
+
+.modal { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,.6); display:none; justify-content:center; align-items:center; }
+.modal-content { background:white; padding:20px; border-radius:10px; width:90%; max-width:500px; }
+
+</style>
 </head>
+
 <body>
 
-    <header>
-        <a href="#" class="logo">STAR</a>
-        <div class="cart-icon" onclick="toggleCart()">
-            🛒 السلة <span class="cart-count" id="cart-count">0</span>
-        </div>
-    </header>
+<header>
+<a href="#" class="logo">STAR</a>
+<div class="cart-icon" onclick="toggleCart()">🛒 <span id="cart-count">0</span></div>
+</header>
 
-    <div class="main-wrapper">
-        <aside>
-            <div class="filter-section">
-                <h4>الأقسام</h4>
-                <ul>
-                    <li onclick="loadProductsFromFirebase('all')">عرض الكل</li>
-                    <li onclick="loadProductsFromFirebase('إكسسوارات')">إكسسوارات</li>
-                    <li onclick="loadProductsFromFirebase('شنط')">شنط</li>
-                    <li onclick="loadProductsFromFirebase('نضارات')">نضارات</li>
-                    <li onclick="loadProductsFromFirebase('ملابس أطفال')">ملابس أطفال</li>
-                    <li onclick="loadProductsFromFirebase('ملابس حريمي')">ملابس حريمي</li>
-                    <li onclick="loadProductsFromFirebase('ملابس رجالي')">ملابس رجالي</li>
-                    <li onclick="loadProductsFromFirebase('أحذية')">أحذية</li>
-                    <li onclick="loadProductsFromFirebase('مستحضرات تجميل')">مستحضرات تجميل</li>
-                </ul>
-                <div style="margin-top: 20px; border-top: 1px solid #eee; padding-top: 10px;">
-                    <p style="font-size: 12px; color: #888;">للتواصل:</p>
-                    <a href="https://wa.me/201105932868" target="_blank" class="wa-sidebar-link">🟢 واتساب: 01105932868</a>
-                </div>
-            </div>
-        </aside>
+<div class="main-wrapper">
 
-        <main class="content">
-            <h2 id="view-title" style="margin-bottom: 25px; font-size: 22px;">أحدث الموديلات</h2>
-            <div class="product-grid" id="product-display">جاري التحميل...</div>
-        </main>
-    </div>
+<aside>
+<h4>الأقسام</h4>
+<ul>
+<li onclick="loadProducts('all')">الكل</li>
+<li onclick="loadProducts('إكسسوارات')">إكسسوارات</li>
+<li onclick="loadProducts('شنط')">شنط</li>
+<li onclick="loadProducts('ملابس حريمي')">ملابس حريمي</li>
+</ul>
+</aside>
 
-    <div class="modal" id="cartModal">
-        <div class="modal-content">
-            <h3 style="margin-bottom: 15px; border-bottom: 2px solid #000;">سلة المشتريات</h3>
-            <div id="cart-items-list"></div>
-            <div style="background: #f9f9f9; padding: 15px; border-radius: 10px; margin-top:15px; display:flex; justify-content: space-between; font-weight: bold;">
-                <span>الإجمالي (+70 شحن):</span>
-                <span><span id="total-price">0</span> ج.م</span>
-            </div>
-            <form class="checkout-form" id="orderForm" style="margin-top: 25px;">
-                <input type="text" id="custName" placeholder="الاسم الكامل" required>
-                <input type="tel" id="custPhone" placeholder="رقم الهاتف" required>
-                <input type="text" id="custAddr" placeholder="العنوان بالتفصيل" required>
-                <button type="submit" class="btn-add-cart">تأكيد الطلب عبر واتساب</button>
-                <button type="button" class="btn-add-cart" style="background: #eee; color: #333;" onclick="toggleCart()">إغلاق</button>
-            </form>
-        </div>
-    </div>
+<main class="content">
+<div class="product-grid" id="products">جاري التحميل...</div>
+</main>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+</div>
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyDq6x2sA7DlFrCHVqpjOROsFUYPH3Rcpts",
-            authDomain: "starstore-4b932.firebaseapp.com",
-            projectId: "starstore-4b932",
-            storageBucket: "starstore-4b932.firebasestorage.app",
-            messagingSenderId: "285327083767",
-            appId: "1:285327083767:web:1851756694916f5320abf2"
-        };
+<div class="modal" id="cartModal">
+<div class="modal-content">
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        let allProducts = [];
+<h3>السلة</h3>
+<div id="cart-items"></div>
+<p>الإجمالي: <span id="total">0</span> + 70 شحن</p>
 
-        window.loadProductsFromFirebase = function(filter = 'all') {
-            const display = document.getElementById('product-display');
-            display.innerHTML = "";
-            const filtered = filter === 'all' ? allProducts : allProducts.filter(p => p.category === filter);
-            
-            if(filtered.length === 0) { display.innerHTML = "لا يوجد منتجات في هذا القسم."; return; }
+<form id="orderForm">
+<input type="text" id="name" placeholder="الاسم" required>
+<input type="tel" id="phone" placeholder="الموبايل" required>
+<input type="text" id="address" placeholder="العنوان" required>
 
-            filtered.forEach((p) => {
-                display.innerHTML += `
-                    <div class="product-card">
-                        ${p.soldOut ? '<div class="sold-out-badge">نفذت الكمية</div>' : ''}
-                        <div class="product-img"><img src="${p.image}" style="${p.soldOut ? 'filter:grayscale(1);' : ''}"></div>
-                        <div class="product-info">
-                            <h4>${p.name}</h4>
-                            <p style="color:#27ae60; font-weight:bold;">${p.price} ج.م</p>
-                            <button class="btn-add-cart" onclick="addToCart('${p.name}', ${p.price}, '${p.image}')" ${p.soldOut ? 'disabled style="background:#ccc"' : ''}>
-                                ${p.soldOut ? 'غير متوفر' : 'أضف للسلة'}
-                            </button>
-                        </div>
-                    </div>`;
-            });
-        }
+<select id="payment">
+<option value="">طريقة الدفع</option>
+<option value="cash">كاش</option>
+<option value="vodafone">فودافون / انستا</option>
+<option value="etisalat">اتصالات</option>
+</select>
 
-        onSnapshot(query(collection(db, 'products'), orderBy('createdAt', 'desc')), (snapshot) => {
-            allProducts = [];
-            snapshot.forEach(doc => allProducts.push(doc.data()));
-            loadProductsFromFirebase();
-        });
+<div id="note" style="display:none;color:red;font-size:12px;">
+يرجى تحويل المبلغ وارسال اسكرين واتساب  
+<a href="https://wa.me/201105932868" target="_blank">01105932868</a>
+</div>
 
-        let cart = [];
-        window.addToCart = function(name, price, img) {
-            cart.push({name, price, img});
-            updateCartUI();
-            alert("تمت الإضافة للسلة!");
-        }
+<button type="submit" class="btn-add-cart">اطلب</button>
 
-        window.toggleCart = function() {
-            const m = document.getElementById('cartModal');
-            m.style.display = m.style.display === 'flex' ? 'none' : 'flex';
-        }
+</form>
 
-        function updateCartUI() {
-            document.getElementById('cart-count').innerText = cart.length;
-            const list = document.getElementById('cart-items-list');
-            list.innerHTML = "";
-            let total = 0;
-            cart.forEach(item => {
-                total += parseInt(item.price);
-                list.innerHTML += `<div class="cart-item"><img src="${item.img}"><div>${item.name}<br>${item.price} ج.م</div></div>`;
-            });
-            document.getElementById('total-price').innerText = total + 70;
-        }
+</div>
+</div>
 
-        document.getElementById('orderForm').onsubmit = function(e) {
-            e.preventDefault();
-            let msg = `طلب جديد من STAR STORE:\nالاسم: ${document.getElementById('custName').value}\nالهاتف: ${document.getElementById('custPhone').value}\nالعنوان: ${document.getElementById('custAddr').value}\n\nالمنتجات:\n`;
-            cart.forEach(i => msg += `- ${i.name} (${i.price} ج.م)\n`);
-            msg += `\nالإجمالي: ${document.getElementById('total-price').innerText} ج.م`;
-            window.open(`https://wa.me/201105932868?text=${encodeURIComponent(msg)}`);
-        }
-    </script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+const app = initializeApp({
+apiKey: "AIza...",
+projectId: "starstore-4b932"
+});
+
+const db = getFirestore(app);
+
+let allProducts = [];
+let cart = [];
+
+onSnapshot(collection(db,"products"), snap=>{
+allProducts = [];
+snap.forEach(doc=>{
+allProducts.push({id:doc.id,...doc.data()});
+});
+loadProducts();
+});
+
+window.loadProducts = function(cat="all"){
+let html="";
+let data = cat==="all"? allProducts : allProducts.filter(p=>p.category===cat);
+
+data.forEach(p=>{
+html+=`
+<div class="product-card">
+<div class="product-img"><img src="${p.image}"></div>
+<div class="product-info">
+<h4>${p.name}</h4>
+<p>${p.price} ج</p>
+<button class="btn-add-cart" onclick="addToCart('${p.name}',${p.price})">أضف</button>
+</div>
+</div>`;
+});
+
+document.getElementById("products").innerHTML = html || "لا يوجد منتجات";
+}
+
+window.addToCart=(n,p)=>{
+cart.push({n,p});
+updateCart();
+}
+
+function updateCart(){
+document.getElementById("cart-count").innerText = cart.length;
+let t=0,html="";
+cart.forEach(i=>{
+t+=parseInt(i.p);
+html+=`<div>${i.n} - ${i.p}</div>`;
+});
+document.getElementById("cart-items").innerHTML=html;
+document.getElementById("total").innerText=t;
+}
+
+window.toggleCart=()=>{
+let m=document.getElementById("cartModal");
+m.style.display = m.style.display==="flex"?"none":"flex";
+}
+
+document.getElementById("payment").onchange=function(){
+document.getElementById("note").style.display =
+(this.value==="vodafone"||this.value==="etisalat")?"block":"none";
+}
+
+document.getElementById("orderForm").onsubmit=e=>{
+e.preventDefault();
+
+let pay=document.getElementById("payment").value;
+let msg=`طلب:
+${document.getElementById("name").value}
+${document.getElementById("phone").value}
+
+`;
+
+cart.forEach(i=> msg+=`${i.n} - ${i.p}\n`);
+
+window.open("https://wa.me/201105932868?text="+encodeURIComponent(msg));
+}
+</script>
+
 </body>
 </html>
