@@ -3,64 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لوحة إدارة STAR STORE</title>
+    <title>إدارة STAR STORE</title>
     <link href="https://googleapis.com" rel="stylesheet">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
-        body { background-color: #f8f9fa; padding: 20px; }
-        .container { max-width: 900px; margin: 0 auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
-        h2, h3 { margin-bottom: 20px; border-bottom: 2px solid #eee; padding-bottom: 10px; }
-        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
-        input, select, textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; margin-top: 5px; outline: none; }
-        .btn-add { background: #27ae60; color: white; border: none; padding: 15px; width: 100%; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 16px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 30px; }
-        th, td { padding: 12px; text-align: center; border-bottom: 1px solid #eee; }
-        th { background: #f4f4f4; font-size: 14px; }
-        .btn-sold { background: #f39c12; color: white; border: none; padding: 6px 12px; border-radius: 5px; cursor: pointer; }
-        .btn-del { background: #e74c3c; color: white; border: none; padding: 6px 12px; border-radius: 5px; cursor: pointer; }
-        .status-on { color: #27ae60; font-weight: bold; }
-        .status-off { color: #e74c3c; font-weight: bold; }
+        * { font-family: 'Cairo', sans-serif; box-sizing: border-box; }
+        body { background: #f4f4f4; padding: 20px; text-align: center; }
+        .box { background: white; padding: 20px; border-radius: 10px; max-width: 500px; margin: auto; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        input, select, button { width: 100%; padding: 10px; margin: 10px 0; border-radius: 5px; border: 1px solid #ccc; }
+        .btn { background: #27ae60; color: white; border: none; cursor: pointer; font-weight: bold; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h2>إضافة منتج جديد - STAR STORE</h2>
-    <form id="productForm">
-        <div class="form-grid">
-            <div><label>اسم المنتج</label><input type="text" id="pName" required></div>
-            <div><label>كود المنتج</label><input type="text" id="pCode" required></div>
-            <div><label>السعر (ج.م)</label><input type="number" id="pPrice" required></div>
-            <div>
-                <label>القسم</label>
-                <select id="pCat">
-                    <option>إكسسوارات</option><option>شنط</option><option>نضارات</option>
-                    <option>ملابس أطفال</option><option>ملابس حريمي</option>
-                    <option>ملابس رجالي</option><option>أحذية</option><option>مستحضرات تجميل</option>
-                </select>
-            </div>
-            <div><label>صورة المنتج</label><input type="file" id="pImage" accept="image/*" required></div>
-        </div>
-        <textarea id="pDesc" placeholder="وصف قصير للمنتج..." rows="2"></textarea>
-        <button type="submit" class="btn-add" id="submitBtn">إضافة المنتج للموقع الآن</button>
+<div class="box">
+    <h2>إضافة منتج جديد</h2>
+    <form id="pForm">
+        <input type="text" id="n" placeholder="اسم المنتج" required>
+        <input type="number" id="p" placeholder="السعر" required>
+        <input type="text" id="c" placeholder="الكود">
+        <input type="file" id="i" accept="image/*" required>
+        <button type="submit" class="btn" id="sub">نشر المنتج الآن</button>
     </form>
-
-    <div style="margin-top: 50px; overflow-x: auto;">
-        <h3>إدارة المنتجات المنشورة</h3>
-        <table>
-            <thead>
-                <tr>
-                    <th>الصورة</th><th>الاسم</th><th>الكود</th><th>الحالة</th><th>التحكم</th>
-                </tr>
-            </thead>
-            <tbody id="adminList"></tbody>
-        </table>
-    </div>
 </div>
 
 <script type="module">
     import { initializeApp } from "https://gstatic.com";
-    import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, updateDoc } from "https://gstatic.com";
+    import { getFirestore, collection, addDoc } from "https://gstatic.com";
 
     const firebaseConfig = {
         apiKey: "AIzaSyDq6x2sA7DlFrCHVqpjOROsFUYPH3Rcpts",
@@ -73,70 +41,32 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
-    const productsCol = collection(db, 'products');
 
-    // حماية الدخول
-    let pass = prompt("أدخل كلمة المرور للإدارة:");
-    if(pass !== "mmaahh123") { alert("خطأ!"); window.location.href="index.html"; }
-
-    const form = document.getElementById('productForm');
-
-    form.onsubmit = async (e) => {
+    document.getElementById('pForm').onsubmit = async (e) => {
         e.preventDefault();
-        const btn = document.getElementById('submitBtn');
+        const btn = document.getElementById('sub');
         btn.innerText = "جاري الرفع...";
         btn.disabled = true;
 
-        const file = document.getElementById('pImage').files[0];
         const reader = new FileReader();
-        
         reader.onload = async (event) => {
             try {
-                await addDoc(productsCol, {
-                    name: document.getElementById('pName').value,
-                    code: document.getElementById('pCode').value,
-                    price: document.getElementById('pPrice').value,
-                    category: document.getElementById('pCat').value,
-                    desc: document.getElementById('pDesc').value,
-                    image: event.target.result, 
-                    soldOut: false,
+                await addDoc(collection(db, "products"), {
+                    name: document.getElementById('n').value,
+                    price: document.getElementById('p').value,
+                    code: document.getElementById('c').value,
+                    image: event.target.result,
                     createdAt: Date.now()
                 });
-                form.reset();
-                alert("تم إضافة المنتج بنجاح!");
-            } catch (err) { alert("حدث خطأ!"); }
-            btn.innerText = "إضافة المنتج للموقع الآن";
-            btn.disabled = false;
+                alert("مبروك! المنتج نزل على الموقع");
+                location.reload();
+            } catch (err) {
+                alert("خطأ: " + err.message);
+                btn.disabled = false;
+                btn.innerText = "نشر المنتج الآن";
+            }
         };
-        reader.readAsDataURL(file);
-    };
-
-    onSnapshot(productsCol, (snapshot) => {
-        const list = document.getElementById('adminList');
-        list.innerHTML = "";
-        snapshot.forEach((docSnap) => {
-            const p = docSnap.data();
-            const id = docSnap.id;
-            list.innerHTML += `
-                <tr>
-                    <td><img src="${p.image}" width="50" height="50" style="object-fit:cover; border-radius:5px;"></td>
-                    <td>${p.name}</td>
-                    <td>${p.code}</td>
-                    <td class="${p.soldOut ? 'status-off' : 'status-on'}">${p.soldOut ? 'نفذت' : 'متوفر'}</td>
-                    <td>
-                        <button class="btn-sold" onclick="toggleSold('${id}', ${p.soldOut})">تبديل</button>
-                        <button class="btn-del" onclick="deleteProd('${id}')">حذف</button>
-                    </td>
-                </tr>`;
-        });
-    });
-
-    window.deleteProd = async (id) => {
-        if(confirm("هل تريد حذف هذا المنتج؟")) await deleteDoc(doc(db, 'products', id));
-    };
-
-    window.toggleSold = async (id, status) => {
-        await updateDoc(doc(db, 'products', id), { soldOut: !status });
+        reader.readAsDataURL(document.getElementById('i').files[0]);
     };
 </script>
 </body>
